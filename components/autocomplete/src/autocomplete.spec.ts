@@ -61,6 +61,8 @@ import {
 import {
   DtOption,
   DtOptionSelectionChange,
+  DT_UI_TEST_CONFIG,
+  DtUiTestConfiguration,
 } from '@dynatrace/barista-components/core';
 import {
   DtFormField,
@@ -82,6 +84,13 @@ describe('DtAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
   let zone: MockNgZone;
 
+  const overlay_config: DtUiTestConfiguration = {
+    attributeName: 'uitestid',
+    constructOverlayAttributeValue(attributeName: string): string {
+      return `${attributeName}-overlay`;
+    },
+  };
+
   // Creates a test component fixture.
   function createComponent<T>(
     component: Type<T>,
@@ -99,6 +108,7 @@ describe('DtAutocomplete', () => {
       declarations: [component],
       providers: [
         { provide: NgZone, useFactory: () => (zone = new MockNgZone()) },
+        { provide: DT_UI_TEST_CONFIG, useValue: overlay_config },
         ...providers,
       ],
     });
@@ -1568,6 +1578,20 @@ describe('DtAutocomplete', () => {
       expect(panel.classList).toContain('class-two');
     }));
   });
+  describe('propagate attribute to overlay', () => {
+    it('should propagate attribute to overlay when `uitestid` is provided', () => {
+      const fixture: ComponentFixture<PropagateAttribute> = createComponent(
+        PropagateAttribute,
+      );
+      fixture.detectChanges();
+      const trigger = fixture.componentInstance.trigger;
+      trigger.openPanel();
+      const overlay = overlayContainerElement.querySelector(
+        '.dt-autocomplete-panel',
+      )!.parentElement;
+      expect(overlay!.outerHTML).toContain('uitestid="autocomplete-overlay"');
+    });
+  });
 });
 
 @Component({
@@ -1885,6 +1909,26 @@ class AutocompleteWithNumberInputAndNgModel {
 class DynamicallyChangingAutocomplete {
   @ViewChild('autoOne', { static: false }) autoOne: DtAutocomplete<any>;
   @ViewChild('autoTow', { static: false }) autoTow: DtAutocomplete<any>;
+  @ViewChild(DtAutocompleteTrigger, { static: false })
+  trigger: DtAutocompleteTrigger<any>;
+}
+
+@Component({
+  template: `
+    <input
+      #input
+      uitestid="autocomplete"
+      class="test"
+      type="number"
+      dtInput
+      [dtAutocomplete]="auto"
+    />
+    <dt-autocomplete #auto>
+      <dt-option [value]="0">First</dt-option>
+    </dt-autocomplete>
+  `,
+})
+class PropagateAttribute {
   @ViewChild(DtAutocompleteTrigger, { static: false })
   trigger: DtAutocompleteTrigger<any>;
 }

@@ -43,9 +43,20 @@ import {
   createComponent,
   dispatchKeyboardEvent,
 } from '@dynatrace/barista-components/testing';
+import {
+  DT_UI_TEST_CONFIG,
+  DtUiTestConfiguration,
+} from '@dynatrace/barista-components/core';
 
 describe('DtContextDialog', () => {
   let overlayContainer: OverlayContainer;
+  let overlayContainerElement: HTMLElement;
+  const overlay_config: DtUiTestConfiguration = {
+    attributeName: 'uitestid',
+    constructOverlayAttributeValue(attributeName: string): string {
+      return `${attributeName}-overlay`;
+    },
+  };
 
   // tslint:disable-next-line:no-any
   function configureDtContextDialogTestingModule(declarations: any[]): void {
@@ -56,10 +67,12 @@ describe('DtContextDialog', () => {
         DtIconModule.forRoot({ svgIconLocation: `{{name}}.svg` }),
       ],
       declarations,
+      providers: [{ provide: DT_UI_TEST_CONFIG, useValue: overlay_config }],
     }).compileComponents();
 
     inject([OverlayContainer], (oc: OverlayContainer) => {
       overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
     })();
   }
 
@@ -345,6 +358,23 @@ describe('DtContextDialog', () => {
         ).toBeDefined();
       }));
     });
+    describe('propagate attribute to overlay', () => {
+      let fixture;
+      beforeEach(fakeAsync(() => {
+        fixture = TestBed.createComponent(BasicContextDialog);
+        fixture.detectChanges();
+      }));
+      // tslint:disable-next-line: dt-no-focused-tests
+      it('should propagate attribute to overlay when `uitestid` is provided', fakeAsync(() => {
+        const contextDialog = fixture.componentInstance.contextDialog;
+        contextDialog.open();
+        fixture.detectChanges();
+        tick();
+        expect(overlayContainerElement.innerHTML).toContain(
+          'uitestid="context-dialog-overlay"',
+        );
+      }));
+    });
   });
 });
 
@@ -370,6 +400,7 @@ describe('DtContextDialog', () => {
       [tabIndex]="tabIndexOverride"
       [disabled]="disabled"
       [overlayPanelClass]="panelClass"
+      uitestid="context-dialog"
     >
       <p>Some cool content</p>
       <button #interactive>test</button>
