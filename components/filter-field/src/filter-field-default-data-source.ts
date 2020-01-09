@@ -144,7 +144,7 @@ export type DtFilterFieldDefaultDataSourceType =
  */
 export class DtFilterFieldDefaultDataSource<
   T extends DtFilterFieldDefaultDataSourceType
-> implements DtFilterFieldDataSource {
+> implements DtFilterFieldDataSource<T> {
   private readonly _data$: BehaviorSubject<T>;
 
   /** Structure of data that is used, transformed and rendered by the filter-field. */
@@ -164,7 +164,7 @@ export class DtFilterFieldDefaultDataSource<
    * Should return a stream of data that will be transformed, filtered and
    * displayed by the DtFilterFieldViewer (filter-field)
    */
-  connect(): Observable<DtNodeDef | null> {
+  connect(): Observable<DtNodeDef<T> | null> {
     return this._data$.pipe(map(data => this.transformObject(data)));
   }
 
@@ -215,7 +215,7 @@ export class DtFilterFieldDefaultDataSource<
   /** Transforms the provided data into a DtNodeDef which contains a DtAutocompleteDef. */
   transformAutocomplete(
     data: DtFilterFieldDefaultDataSourceAutocomplete,
-  ): DtNodeDef {
+  ): DtNodeDef<T> {
     const def = dtAutocompleteDef(
       data,
       null,
@@ -233,9 +233,9 @@ export class DtFilterFieldDefaultDataSource<
   /** Transforms the provided data into a DtNodeDef which contains a DtOptionDef. */
   transformOption(
     data: DtFilterFieldDefaultDataSourceOption,
-    parentAutocompleteOrOption: DtNodeDef | null = null,
-    existingDef: DtNodeDef | null = null,
-  ): DtNodeDef {
+    parentAutocompleteOrOption: DtNodeDef<T> | null = null,
+    existingDef: DtNodeDef<T> | null = null,
+  ): DtNodeDef<T> {
     const parentGroup = isDtGroupDef(parentAutocompleteOrOption)
       ? parentAutocompleteOrOption
       : null;
@@ -243,9 +243,9 @@ export class DtFilterFieldDefaultDataSource<
       parentGroup !== null
         ? parentGroup.group.parentAutocomplete
         : isDtAutocompleteDef(parentAutocompleteOrOption)
-        ? (parentAutocompleteOrOption as DtNodeDef)
+        ? (parentAutocompleteOrOption as DtNodeDef<T>)
         : null;
-    return dtOptionDef(
+    return dtOptionDef<T>(
       data,
       existingDef,
       typeof data === 'string' ? data : data.name,
@@ -258,9 +258,9 @@ export class DtFilterFieldDefaultDataSource<
   /** Transforms the provided data into a DtNodeDef which contains a DtGroupDef. */
   transformGroup(
     data: DtFilterFieldDefaultDataSourceGroup,
-    parentAutocomplete: DtNodeDef | null = null,
-    existingDef: DtNodeDef | null = null,
-  ): DtNodeDef {
+    parentAutocomplete: DtNodeDef<T> | null = null,
+    existingDef: DtNodeDef<T> | null = null,
+  ): DtNodeDef<T> {
     const def = dtGroupDef(
       data,
       existingDef,
@@ -273,8 +273,10 @@ export class DtFilterFieldDefaultDataSource<
   }
 
   /** Transforms the provided data into a DtNodeDef which contains a DtFreeTextDef. */
-  transformFreeText(data: DtFilterFieldDefaultDataSourceFreeText): DtNodeDef {
-    const def = dtFreeTextDef(
+  transformFreeText(
+    data: DtFilterFieldDefaultDataSourceFreeText,
+  ): DtNodeDef<T> {
+    const def = dtFreeTextDef<T>(
       data,
       null,
       [],
@@ -286,7 +288,7 @@ export class DtFilterFieldDefaultDataSource<
   }
 
   /** Transforms the provided data into a DtNodeDef which contains a DtRangeDef. */
-  transformRange(data: DtFilterFieldDefaultDataSourceRange): DtNodeDef {
+  transformRange(data: DtFilterFieldDefaultDataSourceRange): DtNodeDef<T> {
     return dtRangeDef(
       data,
       null,
@@ -302,9 +304,9 @@ export class DtFilterFieldDefaultDataSource<
   /** Transforms the provided data into a DtNodeDef. */
   transformObject(
     data: DtFilterFieldDefaultDataSourceType | null,
-    parent: DtNodeDef | null = null,
-  ): DtNodeDef | null {
-    let def: DtNodeDef | null = null;
+    parent: DtNodeDef<T> | null = null,
+  ): DtNodeDef<T> | null {
+    let def: DtNodeDef<T> | null = null;
     if (this.isAutocomplete(data)) {
       def = this.transformAutocomplete(data);
     } else if (this.isFreeText(data)) {
@@ -324,10 +326,10 @@ export class DtFilterFieldDefaultDataSource<
   /** Transforms the provided list of data objects into an array of DtNodeDefs. */
   transformList(
     list: DtFilterFieldDefaultDataSourceType[],
-    parent: DtNodeDef | null = null,
-  ): DtNodeDef[] {
+    parent: DtNodeDef<T> | null = null,
+  ): DtNodeDef<T>[] {
     return list
       .map(item => this.transformObject(item, parent))
-      .filter(item => item !== null) as DtNodeDef[];
+      .filter(item => item !== null) as DtNodeDef<T>[];
   }
 }
