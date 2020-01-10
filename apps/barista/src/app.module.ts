@@ -62,6 +62,7 @@ import { DtBreadcrumbsModule } from '@dynatrace/barista-components/breadcrumbs';
 import { DtThemingModule } from '@dynatrace/barista-components/theming';
 import { DtExamplesModule } from '@dynatrace/barista-components/examples';
 import { DtToastModule } from '@dynatrace/barista-components/toast';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -82,6 +83,12 @@ import { DtToastModule } from '@dynatrace/barista-components/toast';
     DtThemingModule,
     DtExamplesModule,
     DtToastModule,
+    /**
+     * The routermodule is added for the secondary-nav component examples
+     * to work. This can be removed as soon as the secondary-nav-section
+     * does not depend on it anymore. (see issue #465 on github)
+     */
+    RouterModule.forRoot([], { errorHandler: () => {} }),
   ],
   exports: [],
   declarations: [
