@@ -136,18 +136,26 @@ from a previous pipe with a rate. The function takes the following parameters:
 | `input`    | `DtFormattedValue | number` |         | numeric value to be transformed by the pipe |
 | `rateUnit` | `DtRateUnit | string`       |         | rate unit                                   |
 
-### Time
+### Duration
 
-The `formatTime` function converts a number to a timestamp. Default behaviour
-will print the first available value/unit and only the next two descending
-steps. Optionally you can set the input unit and which unit you want to set as
-the lower limit.
+The `formatDuration` function converts a number to a timestamp. Default
+behaviour will print the first available value/unit and only the next two
+descending units.
 
-| Name        | Type         | Default     | Description                                                                                                    |
-| ----------- | ------------ | ----------- | -------------------------------------------------------------------------------------------------------------- |
-| `input`     | `number`     | `ms`        | numeric value to be transformed by the pipe                                                                    |
-| `inputUnit` | `DtTimeUnit` | `undefined` | Which timeunit is used for the input                                                                           |
-| `toUnit`    | `DtTimeUnit` | `undefined` | Which timeunit is the smallest possible output (Pipe disregards toUnit when unit is bigger than the inputUnit) |
+**Formatting/Precision modes:**
+
+- `DEFAULT` | `undefined`: Will print three units starting from the first unit
+  with a value and descends two units.
+- `PRECISE`: Prints every unit with a value or prints a decimal number when a
+  outputUnit is provided.
+- `1 - n`: Prints a custom amount of units.
+
+| Name           | Type              | Default     | Description                                                  |
+| -------------- | ----------------- | ----------- | ------------------------------------------------------------ |
+| `input`        | `number`          | `ms`        | Numeric value to be transformed by the pipe                  |
+| `formatMethod` | `string | number` | `undefined` | Formatting/Precision mode controlling the output of the pipe |
+| `outputUnit`   | `DtTimeUnit`      | `undefined` | Which unit to transform the input to                         |
+| `inputUnit`    | `DtTimeUnit`      | `undefined` | Which timeunit is used for the input                         |
 
 ## Special uses (e.g. infographics, tiles)
 

@@ -22,7 +22,9 @@
 <p>per second: {{ exampleValue | dtCount | dtRate: 's' }}</p>
 <p>Chaining rate + bytes: {{ exampleValue | dtRate: 's' | dtBytes }}</p>
 <p>Chaining bytes + rate: {{ exampleValue | dtBytes | dtRate: 's' }}</p>
+<h2>Time</h2>
 <p>
-  InputUnit(Day -> Second): Time Formatter: {{ exampleValue | dtTime: 'd':'s' }}
+  Time Formatter(Ms):
+  {{ exampleValue | dtDuration: 'PRECISE':'s' | dtRate: 'min' }}
 </p>
-<p>InputUnit(Ms): Time Formatter: {{ exampleValue | dtTime }}</p>
+<p>{{ exampleValue | dtDuration: 'PRECISE' }}</p>
