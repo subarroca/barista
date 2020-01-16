@@ -1611,7 +1611,8 @@ describe('DtFilterField', () => {
     });
 
     it('should not display the clear all button if no filters are set', () => {
-      expect(getClearAll(fixture)).toBeNull();
+      // Check if the clear all is initially not visible.
+      expect(isClearAllVisible(fixture)).toBe(false);
 
       const autocompleteFilter = [
         TEST_DATA_EDITMODE.autocomplete[0],
@@ -1622,7 +1623,8 @@ describe('DtFilterField', () => {
       filterField.filters = [autocompleteFilter];
       fixture.detectChanges();
 
-      expect(getClearAll(fixture)).not.toBeNull();
+      // After setting the filters, there should be a clear all button visible.
+      expect(isClearAllVisible(fixture)).toBe(true);
     });
 
     // the user is in the edit mode of a filter
@@ -1641,7 +1643,7 @@ describe('DtFilterField', () => {
       zone.simulateZoneExit();
       fixture.detectChanges();
 
-      expect(getClearAll(fixture)).toBeNull();
+      expect(isClearAllVisible(fixture)).toBe(false);
     });
 
     // the user is in the edit mode of a filter
@@ -1664,7 +1666,7 @@ describe('DtFilterField', () => {
       const autOption = options[0];
       autOption.click();
 
-      expect(getClearAll(fixture)).toBeNull();
+      expect(isClearAllVisible(fixture)).toBe(false);
     });
 
     it('should not display the clear all button if no label is provided', () => {
@@ -1678,7 +1680,7 @@ describe('DtFilterField', () => {
       fixture.componentInstance.clearAllLabel = '';
       fixture.detectChanges();
 
-      expect(getClearAll(fixture)).toBeNull();
+      expect(isClearAllVisible(fixture)).toBe(false);
     });
 
     it('should reset the entire filter field', () => {
@@ -2094,18 +2096,26 @@ function getTagButtons(
   return { label, deleteButton };
 }
 
-// tslint:disable-next-line:no-any
 function getInput(fixture: ComponentFixture<any>): HTMLInputElement {
   return fixture.debugElement.query(By.css('.dt-filter-field-input'))
     .nativeElement;
 }
 
-// tslint:disable-next-line:no-any
+/** Get the clearAll button. */
 function getClearAll(fixture: ComponentFixture<any>): HTMLButtonElement | null {
   const dbgEl = fixture.debugElement.query(
     By.css('.dt-filter-field-clear-all-button'),
   );
   return dbgEl ? dbgEl.nativeElement : null;
+}
+
+/** Get the clearAll button and evaluate if it is visible or not. */
+function isClearAllVisible(fixture: ComponentFixture<any>): boolean {
+  const clearAll = getClearAll(fixture);
+  return (
+    clearAll !== null &&
+    !clearAll.classList.contains('dt-filter-field-clear-all-button-hidden')
+  );
 }
 
 @Component({

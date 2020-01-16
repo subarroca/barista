@@ -24,12 +24,18 @@ export const filterTags = Selector('dt-filter-field-tag');
 
 export const input = Selector('input');
 
-export async function clickOption(
+export const switchToFirstDatasource = Selector('#switchToFirstDatasource');
+export const switchToSecondDatasource = Selector('#switchToSecondDatasource');
+export const setupSecondTestScenario = Selector('#setupSecondTestScenario');
+
+export function clickOption(
   nth: number,
   testController?: TestController,
-): Promise<void> {
+): TestControllerPromise {
   const controller = testController || t;
 
-  await controller.click(filterField);
-  await controller.click(option(nth));
+  return controller
+    .click(filterField)
+    .wait(150)
+    .click(option(nth));
 }
