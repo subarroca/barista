@@ -17,11 +17,12 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { ESCAPE, UP_ARROW } from '@angular/cdk/keycodes';
 import {
-  FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayConfig,
   OverlayRef,
   PositionStrategy,
+  ViewportRuler,
+  OverlayContainer,
 } from '@angular/cdk/overlay';
 import {
   ChangeDetectorRef,
@@ -31,6 +32,8 @@ import {
   NgZone,
   OnDestroy,
   Renderer2,
+  Optional,
+  Inject,
 } from '@angular/core';
 import {
   EMPTY,
@@ -43,9 +46,14 @@ import {
 } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 
-import { readKeyCode } from '@dynatrace/barista-components/core';
+import {
+  readKeyCode,
+  DtFlexibleConnectedPositionStrategy,
+} from '@dynatrace/barista-components/core';
 
 import { DtFilterFieldRange } from './filter-field-range';
+import { Platform } from '@angular/cdk/platform';
+import { DOCUMENT } from '@angular/common';
 
 @Directive({
   selector: `input[dtFilterFieldRange]`,
@@ -116,7 +124,7 @@ export class DtFilterFieldRangeTrigger implements OnDestroy {
   private _overlayRef: OverlayRef | null;
 
   /** Strategy that is used to position the panel. */
-  private _positionStrategy: FlexibleConnectedPositionStrategy;
+  private _positionStrategy: DtFlexibleConnectedPositionStrategy;
 
   /** Whether the component has already been destroyed */
   private _componentDestroyed = false;
@@ -139,6 +147,11 @@ export class DtFilterFieldRangeTrigger implements OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     zone: NgZone,
     renderer: Renderer2,
+    private _viewportRuler: ViewportRuler,
+    private _platform: Platform,
+    private _overlayContainer: OverlayContainer,
+    // tslint:disable-next-line:no-any
+    @Optional() @Inject(DOCUMENT) private _document: any,
   ) {
     // tslint:disable-next-line:strict-type-predicates
     if (typeof window !== 'undefined') {
@@ -271,9 +284,13 @@ export class DtFilterFieldRangeTrigger implements OnDestroy {
 
   /** Returns the overlay position. */
   private _getOverlayPosition(): PositionStrategy {
-    this._positionStrategy = this._overlay
-      .position()
-      .flexibleConnectedTo(this._elementRef)
+    this._positionStrategy = new DtFlexibleConnectedPositionStrategy(
+      this._elementRef,
+      this._viewportRuler,
+      this._document,
+      this._platform,
+      this._overlayContainer,
+    )
       .withFlexibleDimensions(false)
       .withPush(false)
       .withPositions([

@@ -23,11 +23,12 @@ import {
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {
-  FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayConfig,
   OverlayRef,
   PositionStrategy,
+  ViewportRuler,
+  OverlayContainer,
 } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
 import {
@@ -75,12 +76,14 @@ import {
   isDefined,
   readKeyCode,
   stringify,
+  DtFlexibleConnectedPositionStrategy,
 } from '@dynatrace/barista-components/core';
 import { DtFormField } from '@dynatrace/barista-components/form-field';
 
 import { DtAutocomplete } from './autocomplete';
 import { getDtAutocompleteMissingPanelError } from './autocomplete-errors';
 import { DtAutocompleteOrigin } from './autocomplete-origin';
+import { Platform } from '@angular/cdk/platform';
 
 /** Provider that allows the autocomplete to register as a ControlValueAccessor. */
 export const DT_AUTOCOMPLETE_VALUE_ACCESSOR: Provider = {
@@ -230,7 +233,7 @@ export class DtAutocompleteTrigger<T>
   private _canOpenOnNextFocus = true;
 
   /** Strategy that is used to position the panel. */
-  private _positionStrategy: FlexibleConnectedPositionStrategy;
+  private _positionStrategy: DtFlexibleConnectedPositionStrategy;
 
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
@@ -253,6 +256,9 @@ export class DtAutocompleteTrigger<T>
     private _changeDetectorRef: ChangeDetectorRef,
     private _viewportResizer: DtViewportResizer,
     private _zone: NgZone,
+    private _viewportRuler: ViewportRuler,
+    private _platform: Platform,
+    private _overlayContainer: OverlayContainer,
     @Optional() @Host() private _formField: DtFormField<string>,
     // tslint:disable-next-line:no-any
     @Optional() @Inject(DOCUMENT) private _document: any,
@@ -500,9 +506,13 @@ export class DtAutocompleteTrigger<T>
   }
 
   private _getOverlayPosition(): PositionStrategy {
-    this._positionStrategy = this._overlay
-      .position()
-      .flexibleConnectedTo(this._getConnectedElement())
+    this._positionStrategy = new DtFlexibleConnectedPositionStrategy(
+      this._getConnectedElement(),
+      this._viewportRuler,
+      this._document,
+      this._platform,
+      this._overlayContainer,
+    )
       .withFlexibleDimensions(false)
       .withPush(false)
       .withPositions([
