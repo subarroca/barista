@@ -25,7 +25,6 @@ import { DtTimeUnit } from '../unit';
 enum DurationMode {
   DEFAULT = 'DEFAULT',
   PRECISE = 'PRECISE',
-  FUZZY = 'FUZZY',
 }
 
 // tslint:disable: no-magic-numbers
