@@ -24,7 +24,7 @@ import {
 } from '@dynatrace/barista-components/drawer';
 
 import { DataService } from '../../services/data.service';
-import { options } from '../chart/selection-area/chart-options';
+import { options } from '../chart/chart-options';
 
 @Component({
   selector: 'dt-e2e-drawer',

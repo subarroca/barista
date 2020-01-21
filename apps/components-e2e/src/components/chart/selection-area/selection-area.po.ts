@@ -54,11 +54,11 @@ export const overlayApply = overlay.child('button').withText('Apply');
 export const overlayText = overlay.child('.dt-selection-area-overlay-text');
 
 /** Creates a selection from the starting point with the provided width */
-export async function createRange(
+export function createRange(
   width: number,
   start: Point,
   testController?: TestController,
-): Promise<void> {
+): TestControllerPromise {
   const controller = testController || t;
   return controller.drag(plotBackground, width, 0, {
     offsetX: start.x,
@@ -66,11 +66,11 @@ export async function createRange(
   });
 }
 
-export async function createTimestamp(
+export function createTimestamp(
   point: Point,
   selector?: Selector,
   testController?: TestController,
-): Promise<void> {
+): TestControllerPromise {
   const controller = testController || t;
   return controller.click(selector || plotBackground, {
     offsetX: point.x,
@@ -79,22 +79,21 @@ export async function createTimestamp(
 }
 
 /** Execute a drag on a range handle to increase or decrease the selection */
-export async function dragHandle(
+export function dragHandle(
   handle: Selector,
   offsetX: number,
   testController?: TestController,
-): Promise<void> {
+): TestControllerPromise {
   const controller = testController || t;
 
-  await controller.drag(handle, offsetX, 0, { speed: 0.01 });
-  await controller.wait(300);
+  return controller.drag(handle, offsetX, 0, { speed: 0.01 }).wait(300);
 }
 
-export async function closeOverlay(
+export function closeOverlay(
   testController?: TestController,
-): Promise<void> {
+): TestControllerPromise {
   const controller = testController || t;
-  const closeButton = await overlay
+  const closeButton = overlay
     .child('button')
     .withAttribute('aria-label', /close/gim);
 
