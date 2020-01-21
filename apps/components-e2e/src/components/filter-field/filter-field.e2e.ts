@@ -23,56 +23,92 @@ import {
   input,
   clearAll,
   filterTags,
+  tagOverlay,
 } from './filter-field.po';
 import { Selector } from 'testcafe';
 
 fixture('Filter Field').page('http://localhost:4200/filter-field');
 
-test('should not show a error box if there is no validator provided', async (testController: TestController) => {
-  await clickOption(1);
-  await testController.typeText(input, 'abc');
-  await testController.expect(await errorBox.exists).notOk();
+test('should not show a error box if there is no validator provided', async () => {
+  await clickOption(1)
+    .typeText(input, 'abc')
+    .expect(errorBox.exists)
+    .notOk();
 });
 
-test('should show a error box if does not meet the validation function', async (testController: TestController) => {
-  await clickOption(3);
-  await testController.typeText(input, 'a');
-  await testController.expect(await errorBox.exists).ok();
-  await testController
-    .expect(await errorBox.innerText)
+test('should show a error box if does not meet the validation function', async () => {
+  await clickOption(3)
+    .typeText(input, 'a')
+    .expect(errorBox.exists)
+    .ok()
+    .expect(errorBox.innerText)
     .match(/min 3 characters/gm);
 });
 
 // TODO: lukas.holzer investigate why this test is flaky on Browserstack
 // tslint:disable-next-line: dt-no-focused-tests
-test.skip('should show is required error when the input is dirty', async (testController: TestController) => {
-  await clickOption(3);
-  await testController.typeText(input, 'a');
-  await testController.pressKey('backspace');
-  await testController.expect(await errorBox.exists).ok();
-  await testController
-    .expect(await errorBox.innerText)
+test.skip('should show is required error when the input is dirty', async () => {
+  await clickOption(3)
+    .typeText(input, 'a')
+    .pressKey('backspace')
+    .expect(errorBox.exists)
+    .ok()
+    .expect(errorBox.innerText)
     .match(/field is required/gm);
 });
 
-test('should hide the error box when the node was deleted', async (testController: TestController) => {
-  await clickOption(3);
-  await testController.pressKey('backspace').pressKey('backspace');
-  await testController.expect(await errorBox.exists).notOk();
+test('should hide the error box when the node was deleted', async () => {
+  await clickOption(3)
+    .pressKey('backspace')
+    .pressKey('backspace')
+    .expect(errorBox.exists)
+    .notOk();
 });
 
-test('should remove all filters when clicking the clear-all button', async (testController: TestController) => {
+test('should remove all filters when clicking the clear-all button', async () => {
   // Create a new filter by clicking the outer- and inner-option
   await clickOption(4);
-  await clickOption(1);
 
-  // Click somewhere outside so the clear-all button appears
-  await testController.click(Selector('.outside'));
-  await testController.wait(300);
-  await testController.expect(await clearAll.exists).ok();
+  await clickOption(1)
+    // Click somewhere outside so the clear-all button appears
+    .click(Selector('.outside'))
+    .wait(300)
+    .expect(clearAll.exists)
+    .ok()
+    // Click the clear all-button, the created filter should be removed
+    .click(clearAll)
+    .wait(300)
+    .expect(filterTags.exists)
+    .notOk();
+});
 
-  // Click the clear all-button, the created filter should be removed
-  await testController.click(clearAll);
-  await testController.wait(300);
-  await testController.expect(await filterTags.exists).notOk();
+test('should not show the overlay on a tag because the tag value is not ellipsed', async () => {
+  await clickOption(1)
+    .typeText(input, 'abcdefghijklmno')
+    // Wait for a certain amount of time to let the filterfield refresh
+    .wait(250)
+    // Select the free text node and start typing
+    .pressKey('enter')
+    .wait(250)
+    // Hover the filter field tag
+    .hover(filterTags)
+    .expect(tagOverlay.exists)
+    .notOk();
+});
+
+test('should show the overlay on a tag because the tag value is ellipsed', async () => {
+  await clickOption(1)
+    .typeText(
+      input,
+      'abcdefghijklmnopqrstuvwxyz, 1234567890, abcdefghijklmnopqrstuvwxyz',
+    )
+    // Wait for a certain amount of time to let the filterfield refresh
+    .wait(250)
+    // Select the free text node and start typing
+    .pressKey('enter')
+    .wait(250)
+    // Hover the filter field tag
+    .hover(filterTags)
+    .expect(tagOverlay.exists)
+    .ok();
 });
