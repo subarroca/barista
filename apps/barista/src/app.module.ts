@@ -62,8 +62,6 @@ import { DtBreadcrumbsModule } from '@dynatrace/barista-components/breadcrumbs';
 import { DtThemingModule } from '@dynatrace/barista-components/theming';
 import { DtExamplesModule } from '@dynatrace/barista-components/examples';
 import { DtToastModule } from '@dynatrace/barista-components/toast';
-import { BaColor } from './components/color-component/color';
-import { BaColorGrid } from './components/color-grid/color-grid';
 
 @NgModule({
   imports: [
@@ -105,8 +103,6 @@ import { BaColorGrid } from './components/color-grid/color-grid';
     BaToc,
     BaSidenav,
     BaScrollToTop,
-    BaColor,
-    BaColorGrid,
   ],
   providers: [
     BaPageService,
@@ -129,8 +125,6 @@ import { BaColorGrid } from './components/color-grid/color-grid';
     BaSmallTile,
     BaSearch,
     BaSidenav,
-    BaColor,
-    BaColorGrid,
   ],
   bootstrap: [BaApp],
 })

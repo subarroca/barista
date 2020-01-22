@@ -27,6 +27,9 @@ import { take } from 'rxjs/operators';
 })
 export class BaColor {
   @Input()
+  get color(): string {
+    return this._colorname;
+  }
   set color(value: string) {
     this._colorname = value.toUpperCase().replace('-', '_');
     this._hexcolor = DtColors[this._colorname];

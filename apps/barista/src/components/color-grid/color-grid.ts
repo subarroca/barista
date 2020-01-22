@@ -24,6 +24,9 @@ import { DtColors } from '@dynatrace/barista-components/theming';
 })
 export class BaColorGrid implements AfterContentInit {
   @Input()
+  get color(): string {
+    return this._colorname;
+  }
   set color(value: string) {
     this._colorname = value.toUpperCase();
   }
