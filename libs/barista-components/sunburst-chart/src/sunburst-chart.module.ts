@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2021 Dynatrace LLC
+ * Copyright 2020 Dynatrace LLC
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,25 +16,27 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { DtSunburstChart } from './sunburst-chart';
-import { DtSunburstChartOverlay } from './sunburst-chart.directive';
-import { OverlayModule } from '@angular/cdk/overlay';
 import { DtFormattersModule } from '@dynatrace/barista-components/formatters';
-import { DtSunburstChartSegment } from './sunburst-chart-segment';
 import { SunburstChartPipesModule } from './pipes/sunburst-chart-pipes.module';
+import { DtSunburstChart } from './sunburst-chart';
+import { DtSunburstChartSegment } from './sunburst-chart-segment';
+import { DtSunburstChartOverlay } from './sunburst-chart.directive';
 
 @NgModule({
   imports: [
     CommonModule,
-    OverlayModule,
     SunburstChartPipesModule,
     DtFormattersModule,
   ],
-  exports: [DtSunburstChart, DtSunburstChartOverlay],
+  exports: [
+    DtSunburstChart,
+    DtSunburstChartOverlay,
+    DtFormattersModule
+  ],
   declarations: [
     DtSunburstChart,
     DtSunburstChartOverlay,
     DtSunburstChartSegment,
   ],
 })
-export class DtSunburstChartModule {}
+export class DtSunburstChartModule { }
